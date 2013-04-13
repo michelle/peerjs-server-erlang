@@ -1,0 +1,15 @@
+%% Feel free to use, reuse and abuse the code in this file.
+
+{application, peerjs, [
+	{description, "PeerJS Cloud Server."},
+	{vsn, "1"},
+	{modules, []},
+	{registered, []},
+	{applications, [
+		kernel,
+		stdlib,
+		cowboy
+	]},
+	{mod, {peerjs_app, []}},
+	{env, []}
+]}.
