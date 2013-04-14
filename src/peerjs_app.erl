@@ -13,9 +13,9 @@
 
 %% API.
 start(_Type, _Args) ->
-  ets:new(connections, []),
-  ets:new(ips, []),
-  ets:new(tokens, []),
+  ets:new(connections, [public, named_table]),
+  ets:new(ips, [public, named_table]),
+  ets:new(tokens, [public, named_table]),
 
   % Cowboy routes
   Dispatch = cowboy_router:compile([

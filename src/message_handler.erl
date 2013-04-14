@@ -12,14 +12,18 @@ init({tcp, http}, Req, Opts) ->
 
 % Send message to peer.
 handle(Req, State) ->
-  Key = { cowboy_req:binding(key, Req), cowboy_req:binding(id, Req) },
-  Token = cowboy_req:binding(token, Req),
+  { Apikey, _ } = cowboy_req:binding(key, Req),
+  { Id, _ } = cowboy_req:binding(id, Req),
+  Key = { Apikey, Id },
+  { Token, _ } = cowboy_req:binding(token, Req),
 
   % TODO: pass on the message in the success case.
   case ets:lookup(tokens, Key) of
-    { Key, Token } -> handle_message(Req), cowboy_req:reply(200, Req);
-    _ -> cowboy_req:reply(401, Req)
-  end.
+    [{ Key, Token }] -> handle_message(Req),
+      {ok, Req2} = cowboy_req:reply(200, Req);
+    _ -> {ok, Req2} = cowboy_req:reply(401, Req)
+  end,
+  {ok, Req2, State}.
 
 terminate(Reason, Req, State) ->
   ok.
