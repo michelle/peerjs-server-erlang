@@ -13,9 +13,15 @@
 
 %% API.
 start(_Type, _Args) ->
+  ets:new(connections, []),
+  ets:new(ips, []),
+  ets:new(tokens, []),
+
+  % Cowboy routes
   Dispatch = cowboy_router:compile([
     {'_', [
-      {"/:key/:id/:token/:action", xhr_handler, []},
+      {"/:key/:id/:token/id", xhr_handler, []},
+      {"/:key/:id/:token/:action", message_handler, []},
       {"/peerjs", ws_handler, []}
     ]}
   ]),
