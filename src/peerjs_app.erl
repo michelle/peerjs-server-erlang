@@ -20,14 +20,16 @@ start(_Type, _Args) ->
   % Cowboy routes
   Dispatch = cowboy_router:compile([
     {'_', [
+      {"/:key/id", id_handler, []},
       {"/:key/:id/:token/id", xhr_handler, []},
       {"/:key/:id/:token/:action", message_handler, []},
       {"/peerjs", ws_handler, []}
     ]}
   ]),
-  {ok, _} = cowboy:start_http(peerjs, 100, [{port, ?XHR_PORT}],
+  { ok, _ } = cowboy:start_http(peerjs, 100, [{port, ?XHR_PORT}],
     [{env, [{dispatch, Dispatch}]}]),
   xhr_sup:start_link(),
+  id_sup:start_link(),
   message_sup:start_link(),
   websocket_sup:start_link().
 
