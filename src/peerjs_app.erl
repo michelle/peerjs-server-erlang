@@ -27,8 +27,9 @@ start(_Type, _Args) ->
   ]),
   {ok, _} = cowboy:start_http(peerjs, 100, [{port, ?XHR_PORT}],
     [{env, [{dispatch, Dispatch}]}]),
-  websocket_sup:start_link(),
-  xhr_sup:start_link().
+  xhr_sup:start_link(),
+  message_sup:start_link(),
+  websocket_sup:start_link().
 
 stop(_State) ->
   ok.
