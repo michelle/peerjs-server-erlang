@@ -29,7 +29,7 @@ init({tcp, http}, Req, Opts) ->
 
 % Send message to client.
 info(Message, Req2, State) ->
-  ok = cowboy_req:chunk(Message, State#state.req),
+  ok = cowboy_req:chunk(Message, Req2),
   {loop, Req2, State}.
 
 % Remove from ETS if this PID is in ETS.
