@@ -51,8 +51,8 @@ handle_message(Apikey, Id, Req) ->
   case ets:lookup(connections, Peer) of
     [{ _, Process }] ->
       Process ! Message,
-      Error = { struct, [{ <<"type">>, <<"HTTP-ERROR">> }] },
-      {ok, Req2} = cowboy_req:reply(200, [], mochijson2:encode(Error), Req);
-    _ -> {ok, Req2} = cowboy_req:reply(200, Req)
+      {ok, Req2} = cowboy_req:reply(200, Req);
+    _ -> Error = { struct, [{ <<"type">>, <<"HTTP-ERROR">> }] },
+      {ok, Req2} = cowboy_req:reply(200, [], mochijson2:encode(Error), Req)
   end,
   {ok, Req2}.
