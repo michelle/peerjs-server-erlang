@@ -46,8 +46,14 @@ start_chunking(Req) ->
   ok = cowboy_req:chunk(util:long_string(), Req2),
   ok = cowboy_req:chunk(<<"\n">>, Req2),
   % TODO: only send for first stream.
-  ok = cowboy_req:chunk(mochijson2:encode({struct, [{ <<"type">>, <<"OPEN">> }]}), Req2),
-  ok = cowboy_req:chunk(<<"\n">>, Req2),
+  Restart = cowboy_req:qs_val(<<0>>, Req),
+  case Restart of
+    <<0>> ->
+      ok = cowboy_req:chunk(mochijson2:encode({struct, [{ <<"type">>, <<"OPEN">> }]}), Req2),
+      ok = cowboy_req:chunk(<<"\n">>, Req2);
+    _ ->
+      ok
+  end,
   Req2.
 
 % Send message to client.
