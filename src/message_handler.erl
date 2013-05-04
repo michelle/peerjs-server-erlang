@@ -12,6 +12,12 @@ init({tcp, http}, Req, Opts) ->
 
 handle(Req, State) ->
   { Method, _ } = cowboy_req:method(Req),
+
+  % Debug.
+  %{ Action, _ } = cowboy_req:binding(action, Req),
+  %{ Num, _ } = cowboy_req:qs_val(<<"n">>, Req),
+  %io:format("handle ~p ~p ~p~n", [Method, Action, Num]),
+
   Req1 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>,
     <<"GET,OPTIONS,POST">>, Req),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>,
@@ -21,6 +27,7 @@ handle(Req, State) ->
   {ok, Req4} = handle_others(Req3, Method),
   {ok, Req4, State}.
 
+% CORS
 handle_others(Req, <<"OPTIONS">>) ->
   cowboy_req:reply(200, Req);
 
@@ -45,6 +52,8 @@ handle_message(Apikey, Id, Req) ->
   { ok, Body, _ } = cowboy_req:body(Req),
   { struct, Original } = mochijson2:decode(Body),
   PeerId = proplists:get_value(<<"dst">>, Original),
+
+  % Add the source.
   Message = mochijson2:encode({ struct, [{ <<"src">>, Id } | Original] }),
   Peer = { Apikey, PeerId },
 
