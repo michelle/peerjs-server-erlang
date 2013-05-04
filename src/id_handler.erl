@@ -19,7 +19,7 @@ handle(Req, State) ->
   {ok, Req3, State}.
 
 handle_others(Req) ->
-  Id = util:get_random_string(32, "qwertyQWERTY1234567890"),
+  Id = util:get_random_string(16, "abcdefghijklmnopqrstuvwxyz0123456789"),
   cowboy_req:reply(200, [], Id, Req).
 
 terminate(Reason, Req, State) ->
