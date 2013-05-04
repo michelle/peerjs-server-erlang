@@ -11,7 +11,8 @@
 
 % Start XHR streaming.
 init({tcp, http}, Req, Opts) ->
-  Req1 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET,OPTIONS">>, Req),
+  Req1 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>,
+    <<"GET,POST,OPTIONS">>, Req),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req1),
 
   handle_others(Req2).
@@ -33,11 +34,6 @@ handle_others(Req) ->
       {loop, start_chunking(Req), State}
   end.
 
-handle_options(Req) ->
-  Req1 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET,OPTIONS">>, Req),
-  Req2 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req1),
-  {ok, Req2}.
-
 % Begin the chunking process with a buffer.
 start_chunking(Req) ->
   {ok, Req2} = cowboy_req:chunked_reply(200,
@@ -45,10 +41,11 @@ start_chunking(Req) ->
       Req),
   ok = cowboy_req:chunk(util:long_string(), Req2),
   ok = cowboy_req:chunk(<<"\n">>, Req2),
-  % TODO: only send for first stream.
-  Restart = cowboy_req:qs_val(<<0>>, Req),
+
+  % Only send for the first stream.
+  { Restart, _ } = cowboy_req:qs_val(<<"i">>, Req),
   case Restart of
-    <<0>> ->
+    <<"0">> ->
       ok = cowboy_req:chunk(mochijson2:encode({struct, [{ <<"type">>, <<"OPEN">> }]}), Req2),
       ok = cowboy_req:chunk(<<"\n">>, Req2);
     _ ->
